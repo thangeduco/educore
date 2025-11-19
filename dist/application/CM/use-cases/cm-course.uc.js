@@ -1,0 +1,44 @@
+"use strict";
+// src/application/CM/use-cases/cm-course.uc.ts
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CMCourseUC = void 0;
+/**
+ * Use Case: CMCourseUC
+ * Chịu trách nhiệm lấy & map dữ liệu khoá học CM (cm_course)
+ * sang DTO dùng cho tầng Presentation (API / FE).
+ */
+class CMCourseUC {
+    constructor(repo) {
+        this.repo = repo;
+    }
+    /**
+     * Lấy chi tiết khoá học theo course_code
+     * (tương tự getCourses trong BMProductUC).
+     */
+    async getCourseByCode(courseCode) {
+        console.info(`[CMCourseUC][getCourseByCode] 🔎 Lấy thông tin khoá học với course_code=${courseCode}`);
+        const course = await this.repo.getCourseByCode(courseCode);
+        if (!course) {
+            console.warn(`[CMCourseUC][getCourseByCode] ❌ Không tìm thấy khoá học với course_code=${courseCode}`);
+            throw new Error('Không tìm thấy khoá học');
+        }
+        // Map Domain → DTO (giống style map trong BMProductUC)
+        const dto = {
+            id: course.id,
+            course_code: course.courseCode,
+            title: course.title,
+            description: course.description ?? null,
+            grade: course.grade,
+            subject: course.subject,
+            // hình ảnh & asset
+            sol_image_url: course.solImageUrl ?? null,
+            teacher_profile_image_url: course.teacherProfileImageUrl ?? null,
+            outcome_image_url: course.outcomeImageUrl ?? null,
+            plan_image_url: course.planImageUrl ?? null,
+            created_at: course.createdAt ?? null,
+            updated_at: course.updatedAt ?? null,
+        };
+        return dto;
+    }
+}
+exports.CMCourseUC = CMCourseUC;
